@@ -27,6 +27,10 @@ jobs:
             ./externals/llvm-project
           key: ${{ runner.os }}-norm-${{ hashFiles('externals/llvm-project/llvm/CMakeLists.txt') }}
 
+      - name: Git config
+        run: |
+          git config --global --add safe.directory "$github_workspace"
+
       - name: Build LLVM
         if: steps.cache-llvm.outputs.cache-hit != 'true'
         run: |
@@ -39,7 +43,7 @@ jobs:
       - name: Build and test mlir-tutorial
         run: |
           mkdir build && cd build
-          cmake -DLLVM_DIR=$PWD/../externals/llvm-project/build/lib/cmake/llvm -DMLIR_DIR=$PWD/../externals/llvm-project/build/lib/cmake/mlir ..
+          cmake -DLLVM_DIR=$github_workspace/externals/llvm-project/build/lib/cmake/llvm -DMLIR_DIR=$github_workspace/externals/llvm-project/build/lib/cmake/mlir ..
           cmake --build . --target MLIRAffineFullUnrollPasses
           cmake --build . --target MLIRMulToAddPasses
           cmake --build . --target mlir-headers
